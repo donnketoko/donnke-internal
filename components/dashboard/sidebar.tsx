@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, CircleDot, Database, LayoutDashboard, LogOut, Package, ShoppingCart } from "lucide-react";
+import { BarChart3, Banknote, Boxes, CircleDot, Database, LayoutDashboard, Leaf, LogOut, Package, ShoppingCart, Truck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,6 +11,10 @@ const navigation = [
   { href: "/dashboard/products", label: "Produk", icon: Package },
   { href: "/dashboard/pos", label: "POS", icon: ShoppingCart },
   { href: "/dashboard/sales", label: "Riwayat", icon: BarChart3 },
+  { href: "/dashboard/ingredients", label: "Bahan", icon: Leaf },
+  { href: "/dashboard/suppliers", label: "Supplier", icon: Truck },
+  { href: "/dashboard/inventory", label: "Stok", icon: Boxes },
+  { href: "/dashboard/cash", label: "Kas", icon: Banknote },
   { href: "/test-supabase", label: "Test", icon: Database },
 ];
 
@@ -33,14 +37,14 @@ export function Sidebar() {
           Bakery operations, POS, and sales records in one focused workspace.
         </p>
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-white/10 bg-[#0d0b09]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur md:static md:flex md:flex-1 md:flex-col md:gap-2 md:border-t-0 md:p-4 md:shadow-none">
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex gap-2 overflow-x-auto border-t border-white/10 bg-[#0d0b09]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur md:static md:flex-1 md:flex-col md:overflow-visible md:border-t-0 md:p-4 md:shadow-none">
         {navigation.map((item) => {
           const Icon = item.icon;
           const isActive = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
 
           return (
             <Link
-              className={`flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-medium transition md:justify-start ${
+              className={`flex min-h-12 min-w-16 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-medium transition md:min-w-0 md:justify-start ${
                 isActive
                   ? "bg-gradient-to-r from-amber-200 to-orange-300 text-[#1c1206] shadow-lg shadow-orange-950/20"
                   : "text-slate-400 hover:bg-white/[0.05] hover:text-white"

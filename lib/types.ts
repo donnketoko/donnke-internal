@@ -40,3 +40,65 @@ export type Sale = {
   created_at: string;
   sales_items?: SalesItem[];
 };
+
+export type Supplier = {
+  id: string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type Ingredient = {
+  id: string;
+  name: string;
+  sku: string | null;
+  unit: string;
+  minimum_stock: number;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type InventoryMovementType = "stock_in" | "stock_out" | "adjustment_in" | "adjustment_out" | "waste";
+
+export type InventoryMovement = {
+  id: string;
+  ingredient_id: string;
+  type: InventoryMovementType;
+  qty: number;
+  unit_cost: number;
+  total_cost: number;
+  reference_type: string | null;
+  reference_id: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  ingredients?: Pick<Ingredient, "name" | "unit"> | null;
+};
+
+export type CashCategoryType = "income" | "expense";
+
+export type CashCategory = {
+  id: string;
+  name: string;
+  type: CashCategoryType;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type CashTransaction = {
+  id: string;
+  category_id: string | null;
+  type: CashCategoryType;
+  amount: number;
+  payment_method: string;
+  reference_type: string | null;
+  reference_id: string | null;
+  notes: string | null;
+  transaction_date: string;
+  created_by: string | null;
+  created_at: string;
+  cash_categories?: Pick<CashCategory, "name" | "type"> | null;
+};
