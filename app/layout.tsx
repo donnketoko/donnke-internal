@@ -14,9 +14,9 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className="h-full bg-slate-950 antialiased"
+      className="h-full bg-[#080706] antialiased"
     >
-      <body className="min-h-full bg-slate-950 text-slate-100">{children}</body>
+      <body className="min-h-full bg-[#080706] text-slate-100">{children}</body>
     </html>
   );
 }

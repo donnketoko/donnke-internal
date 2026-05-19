@@ -3,7 +3,7 @@ create extension if not exists "pgcrypto";
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
-  role text not null default 'staff',
+  role text not null default 'staff' check (role in ('owner', 'admin', 'staff')),
   created_at timestamptz not null default now()
 );
 
@@ -32,7 +32,7 @@ create table if not exists public.sales (
   subtotal numeric(12, 2) not null check (subtotal >= 0),
   discount numeric(12, 2) not null default 0 check (discount >= 0),
   total numeric(12, 2) not null check (total >= 0),
-  payment_method text not null default 'cash',
+  payment_method text not null default 'cash' check (payment_method in ('cash', 'qris', 'transfer')),
   created_at timestamptz not null default now()
 );
 
@@ -47,59 +47,42 @@ create table if not exists public.sales_items (
   created_at timestamptz not null default now()
 );
 
-create table if not exists public.suppliers (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  contact_name text,
-  phone text,
-  address text,
-  is_active boolean not null default true,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists public.ingredients (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  sku text unique,
-  unit text not null default 'pcs',
-  supplier_id uuid references public.suppliers(id) on delete set null,
-  min_stock numeric(12, 3) not null default 0 check (min_stock >= 0),
-  is_active boolean not null default true,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists public.inventory_movements (
-  id uuid primary key default gen_random_uuid(),
-  ingredient_id uuid not null references public.ingredients(id) on delete restrict,
-  movement_type text not null check (movement_type in ('in', 'out', 'adjustment')),
-  quantity_delta numeric(12, 3) not null check (quantity_delta <> 0),
-  reference_type text,
-  reference_id uuid,
-  notes text,
-  created_by uuid references public.profiles(id) on delete set null,
-  created_at timestamptz not null default now()
-);
-
 create index if not exists idx_products_category_id on public.products(category_id);
 create index if not exists idx_products_is_active on public.products(is_active);
 create index if not exists idx_sales_cashier_id on public.sales(cashier_id);
 create index if not exists idx_sales_created_at on public.sales(created_at desc);
 create index if not exists idx_sales_items_sale_id on public.sales_items(sale_id);
 create index if not exists idx_sales_items_product_id on public.sales_items(product_id);
-create index if not exists idx_ingredients_supplier_id on public.ingredients(supplier_id);
-create index if not exists idx_ingredients_is_active on public.ingredients(is_active);
-create index if not exists idx_inventory_movements_ingredient_id on public.inventory_movements(ingredient_id);
-create index if not exists idx_inventory_movements_created_at on public.inventory_movements(created_at desc);
-create index if not exists idx_inventory_movements_reference on public.inventory_movements(reference_type, reference_id);
 
 alter table public.profiles enable row level security;
 alter table public.product_categories enable row level security;
 alter table public.products enable row level security;
 alter table public.sales enable row level security;
 alter table public.sales_items enable row level security;
-alter table public.suppliers enable row level security;
-alter table public.ingredients enable row level security;
-alter table public.inventory_movements enable row level security;
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name, role)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data ->> 'full_name', split_part(new.email, '@', 1)),
+    'staff'
+  )
+  on conflict (id) do nothing;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+after insert on auth.users
+for each row execute function public.handle_new_user();
 
 drop policy if exists "Authenticated users can read profiles" on public.profiles;
 create policy "Authenticated users can read profiles"
@@ -155,26 +138,6 @@ to authenticated
 using (true)
 with check (true);
 
-drop policy if exists "Authenticated users can manage suppliers" on public.suppliers;
-create policy "Authenticated users can manage suppliers"
-on public.suppliers
-for all
-to authenticated
-using (true)
-with check (true);
-
-drop policy if exists "Authenticated users can manage ingredients" on public.ingredients;
-create policy "Authenticated users can manage ingredients"
-on public.ingredients
-for all
-to authenticated
-using (true)
-with check (true);
-
-drop policy if exists "Authenticated users can manage inventory movements" on public.inventory_movements;
-create policy "Authenticated users can manage inventory movements"
-on public.inventory_movements
-for all
-to authenticated
-using (true)
-with check (true);
+insert into public.product_categories (name)
+values ('Donat'), ('Minuman'), ('Paket')
+on conflict (name) do nothing;

@@ -13,7 +13,7 @@ const cartItemSchema = z.object({
 const checkoutSchema = z.object({
   items: z.array(cartItemSchema).min(1),
   discount: z.number().min(0).default(0),
-  payment_method: z.string().trim().min(1).default("cash"),
+  payment_method: z.enum(["cash", "qris", "transfer"]).default("cash"),
 });
 
 export async function checkoutSale(input: unknown) {
@@ -29,6 +29,20 @@ export async function checkoutSale(input: unknown) {
     return { ok: false, message: "Sesi login tidak valid." };
   }
 
+  const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
+
+  if (!profile) {
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: user.id,
+      full_name: user.email?.split("@")[0] ?? null,
+      role: "staff",
+    });
+
+    if (profileError) {
+      return { ok: false, message: profileError.message };
+    }
+  }
+
   const productIds = parsed.items.map((item) => item.product_id);
   const { data: products, error: productsError } = await supabase
     .from("products")
@@ -40,24 +54,26 @@ export async function checkoutSale(input: unknown) {
   }
 
   const productMap = new Map(products.map((product) => [product.id, product]));
-  const saleItems = parsed.items.map((item) => {
+  const saleItems = [];
+
+  for (const item of parsed.items) {
     const product = productMap.get(item.product_id);
 
     if (!product || !product.is_active) {
-      throw new Error("Produk tidak aktif atau tidak ditemukan.");
+      return { ok: false, message: "Produk tidak aktif atau tidak ditemukan." };
     }
 
     const price = Number(product.selling_price);
     const hpp = Number(product.hpp);
 
-    return {
+    saleItems.push({
       product_id: item.product_id,
       qty: item.qty,
       price,
       hpp,
       subtotal: price * item.qty,
-    };
-  });
+    });
+  }
 
   const subtotal = saleItems.reduce((sum, item) => sum + item.subtotal, 0);
   const discount = Math.min(parsed.discount, subtotal);

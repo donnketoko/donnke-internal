@@ -43,7 +43,7 @@ export function LoginForm() {
       <label className="grid gap-2 text-sm text-slate-300">
         Email
         <input
-          className="h-11 rounded-lg border border-slate-700 bg-slate-950 px-3 text-slate-100 outline-none transition focus:border-amber-400"
+          className="h-11 rounded-xl border border-white/10 bg-black/25 px-3 text-slate-100 outline-none transition focus:border-amber-300/70"
           name="email"
           type="email"
           autoComplete="email"
@@ -53,7 +53,7 @@ export function LoginForm() {
       <label className="grid gap-2 text-sm text-slate-300">
         Password
         <input
-          className="h-11 rounded-lg border border-slate-700 bg-slate-950 px-3 text-slate-100 outline-none transition focus:border-amber-400"
+          className="h-11 rounded-xl border border-white/10 bg-black/25 px-3 text-slate-100 outline-none transition focus:border-amber-300/70"
           name="password"
           type="password"
           autoComplete="current-password"
@@ -66,7 +66,7 @@ export function LoginForm() {
         </p>
       ) : null}
       <button
-        className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-amber-400 px-4 font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-200 to-orange-300 px-4 font-semibold text-[#1c1206] shadow-lg shadow-orange-950/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isLoading}
         type="submit"
       >

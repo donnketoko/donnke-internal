@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
+  --background: #080706;
   --foreground: #f8fafc;
 }
 
@@ -22,4 +22,18 @@ button,
 input,
 select {
   font: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+input,
+select {
+  color-scheme: dark;
+}
+
+::selection {
+  background: rgba(251, 191, 36, 0.35);
 }
