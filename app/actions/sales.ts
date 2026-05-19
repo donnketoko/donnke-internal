@@ -109,7 +109,7 @@ export async function checkoutSale(input: unknown) {
   }
 
   revalidatePath("/dashboard");
-  revalidatePath("/sales");
+  revalidatePath("/dashboard/sales");
 
   return { ok: true, message: `Transaksi ${sale.invoice_number} tersimpan.` };
 }

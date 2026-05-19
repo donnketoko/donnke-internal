@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, CircleDot, LayoutDashboard, LogOut, Package, ShoppingCart } from "lucide-react";
+import { BarChart3, CircleDot, Database, LayoutDashboard, LogOut, Package, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -8,9 +8,10 @@ import { signOut } from "@/app/actions/auth";
 
 const navigation = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/products", label: "Produk", icon: Package },
-  { href: "/pos", label: "POS", icon: ShoppingCart },
-  { href: "/sales", label: "Riwayat", icon: BarChart3 },
+  { href: "/dashboard/products", label: "Produk", icon: Package },
+  { href: "/dashboard/pos", label: "POS", icon: ShoppingCart },
+  { href: "/dashboard/sales", label: "Riwayat", icon: BarChart3 },
+  { href: "/test-supabase", label: "Test", icon: Database },
 ];
 
 export function Sidebar() {
@@ -32,10 +33,10 @@ export function Sidebar() {
           Bakery operations, POS, and sales records in one focused workspace.
         </p>
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-white/10 bg-[#0d0b09]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur md:static md:flex md:flex-1 md:flex-col md:gap-2 md:border-t-0 md:p-4 md:shadow-none">
+      <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-white/10 bg-[#0d0b09]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur md:static md:flex md:flex-1 md:flex-col md:gap-2 md:border-t-0 md:p-4 md:shadow-none">
         {navigation.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
 
           return (
             <Link

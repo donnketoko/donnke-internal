@@ -30,7 +30,7 @@ export async function createCategory(formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/products");
+  revalidatePath("/dashboard/products");
 }
 
 export async function createProduct(formData: FormData) {
@@ -55,8 +55,8 @@ export async function createProduct(formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/products");
-  revalidatePath("/pos");
+  revalidatePath("/dashboard/products");
+  revalidatePath("/dashboard/pos");
 }
 
 export async function updateProduct(id: string, formData: FormData) {
@@ -84,8 +84,8 @@ export async function updateProduct(id: string, formData: FormData) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/products");
-  revalidatePath("/pos");
+  revalidatePath("/dashboard/products");
+  revalidatePath("/dashboard/pos");
 }
 
 export async function archiveProduct(id: string) {
@@ -96,6 +96,6 @@ export async function archiveProduct(id: string) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/products");
-  revalidatePath("/pos");
+  revalidatePath("/dashboard/products");
+  revalidatePath("/dashboard/pos");
 }
